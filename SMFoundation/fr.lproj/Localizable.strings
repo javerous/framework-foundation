@@ -1,0 +1,17 @@
+/* 
+  Localizable.strings
+  SMFoundation
+
+  Created by Julien-Pierre Avérous on 07/02/2016.
+  Copyright © 2016 Julien-Pierre Avérous. All rights reserved.
+*/
+
+"size_gb" = "Go";
+"size_mb" = "Mo";
+"size_kb" = "Ko";
+"size_b" = "B";
+
+"time_days" = "jours";
+"time_hours" = "heures";
+"time_minutes" = "minutes";
+"time_seconds" = "secondes";

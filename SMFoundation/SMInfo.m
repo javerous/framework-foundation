@@ -37,8 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, nonatomic) SMInfoKind	kind;
 @property (strong, nonatomic) NSString		*domain;
 @property (assign, nonatomic) int			code;
-@property (strong, nonatomic) id			context;
-@property (strong, nonatomic) SMInfo		*subInfo;
+@property (strong, nonatomic, nullable) id			context;
+@property (strong, nonatomic, nullable) SMInfo		*subInfo;
 
 @end
 
@@ -123,6 +123,160 @@ NS_ASSUME_NONNULL_BEGIN
     }
 	
     return self;
+}
+
+
+
+/*
+** SMInfo - Rendering
+*/
+#pragma mark - SMInfo - Rendering
+
+#pragma mark Descriptors
+
+static NSMutableDictionary *gDescriptors;
+static NSMutableDictionary *gLocalizers;
+
++ (dispatch_queue_t)renderDescriptorQueue
+{
+	static dispatch_once_t	onceToken;
+	static dispatch_queue_t	descriptorQueue;
+
+	dispatch_once(&onceToken, ^{
+		descriptorQueue = dispatch_queue_create("com.smfoundation.info.descriptors", DISPATCH_QUEUE_SERIAL);
+	});
+
+	return descriptorQueue;
+}
+
++ (void)registerRenderDescriptors:(NSDictionary *)descriptors localizer:(nullable NSString * (^)(NSString *token))localizer
+{
+	if (!localizer)
+	{
+		NSBundle *bundle = [NSBundle mainBundle];
+		
+		localizer = ^ NSString * (NSString *token) {
+			return [bundle localizedStringForKey:token value:@"" table:nil];
+		};
+	}
+	
+	// Store items.
+	dispatch_async([self renderDescriptorQueue], ^{
+		
+		if (!gDescriptors)
+			gDescriptors = [[NSMutableDictionary alloc] init];
+		
+		[descriptors enumerateKeysAndObjectsUsingBlock:^(NSString *  _Nonnull domain, id  _Nonnull content, BOOL * _Nonnull stop) {
+			gDescriptors[domain] = content;
+			gLocalizers[domain] = localizer;
+		}];
+	});
+}
+
++ (NSDictionary *)renderDescriptorForDomain:(NSString *)domain kind:(SMInfoKind)kind code:(int)code
+{
+	__block NSDictionary *descriptor;
+	
+	dispatch_sync([self renderDescriptorQueue], ^{
+		descriptor = gDescriptors[domain][@(kind)][@(code)];
+	});
+	
+	return descriptor;
+}
+
+
+#pragma mark Rendering
+
+- (NSString *)renderComplete
+{
+	NSMutableString *result = [[NSMutableString alloc] init];
+	
+	// Get info.
+	NSDictionary *infos = [[self class] renderDescriptorForDomain:_domain kind:_kind code:_code];
+	
+	if (!infos)
+	{
+		[result appendFormat:@"Unknow (domain='%@'; kind=%d; code=%d", self.domain, self.kind, self.code];
+		
+		return result;
+	}
+	
+	// Add the error name.
+	[result appendFormat:@"[%@] ", infos[SMInfoNameKey]];
+	
+	// Add the message string
+	NSString *msg = [self renderMessage];
+	
+	if (msg)
+		[result appendString:msg];
+	
+	// Ad the sub-info
+	if (self.subInfo)
+	{
+		[result appendString:@" "];
+		[result appendString:[self.subInfo _render]];
+	}
+	
+	return result;
+}
+
+- (NSString *)_render
+{
+	NSMutableString *result = [[NSMutableString alloc] init];
+	
+	// Get info.
+	NSDictionary *infos = [[self class] renderDescriptorForDomain:_domain kind:_kind code:_code];
+	
+	if (!infos)
+	{
+		[result appendFormat:@"{Unknow}"];
+		
+		return result;
+	}
+	
+	// Add the errcode and the info
+	[result appendFormat:@"{%@ - ", infos[SMInfoNameKey]];
+	
+	// Add the message string
+	NSString *msg = [self renderMessage];
+	
+	if (msg)
+		[result appendString:msg];
+	
+	// Add the other sub-info
+	if (self.subInfo)
+	{
+		[result appendString:@" "];
+		[result appendString:[self.subInfo _render]];
+	}
+	
+	[result appendString:@"}"];
+	
+	return result;
+}
+
+- (NSString *)renderMessage
+{
+	NSDictionary	*infos = [[self class] renderDescriptorForDomain:_domain kind:_kind code:_code];
+	NSString		*msg = infos[SMInfoTextKey];
+	
+	if (!msg)
+	{
+		NSString * (^dyn)(SMInfo *) =  infos[SMInfoDynTextKey];
+		
+		if (dyn)
+			msg = dyn(self);
+	}
+	
+	if (msg)
+	{
+		if ([infos[SMInfoLocalizableKey] boolValue])
+			return NSLocalizedString(msg, @"");
+		else
+			return msg;
+	}
+	
+	return nil;
 }
 
 @end

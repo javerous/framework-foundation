@@ -6,11 +6,13 @@
   Copyright © 2016 Julien-Pierre Avérous. All rights reserved.
 */
 
+// Size.
 "size_gb" = "GB";
 "size_mb" = "MB";
 "size_kb" = "KB";
 "size_b" = "B";
 
+// Time.
 "time_days" = "days";
 "time_hours" = "hours";
 "time_minutes" = "minutes";

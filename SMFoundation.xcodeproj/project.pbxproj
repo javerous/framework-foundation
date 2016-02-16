@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E898241D1C73DD6C00600E66 /* SMNullabilityHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E898241C1C73DCEE00600E66 /* SMNullabilityHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E8A86D051C66BF7A009EABB9 /* SMFoundation.h in Headers */ = {isa = PBXBuildFile; fileRef = E8A86D041C66BF7A009EABB9 /* SMFoundation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E8A86D271C66C157009EABB9 /* SMAmountHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8A86D171C66C157009EABB9 /* SMAmountHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E8A86D281C66C157009EABB9 /* SMAmountHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A86D181C66C157009EABB9 /* SMAmountHelper.m */; };
@@ -28,11 +29,12 @@
 		E8A86D3C1C66C4FD009EABB9 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E8A86D3E1C66C4FD009EABB9 /* Localizable.strings */; };
 		E8A86D491C66CA0F009EABB9 /* SMSignatureHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = E8A86D471C66CA0F009EABB9 /* SMSignatureHelper.h */; };
 		E8A86D4A1C66CA0F009EABB9 /* SMSignatureHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A86D481C66CA0F009EABB9 /* SMSignatureHelper.m */; };
-		E8A86D4D1C66CB06009EABB9 /* SMInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = E8A86D4B1C66CB06009EABB9 /* SMInfo.h */; };
+		E8A86D4D1C66CB06009EABB9 /* SMInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = E8A86D4B1C66CB06009EABB9 /* SMInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E8A86D4E1C66CB06009EABB9 /* SMInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = E8A86D4C1C66CB06009EABB9 /* SMInfo.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E898241C1C73DCEE00600E66 /* SMNullabilityHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMNullabilityHelper.h; sourceTree = "<group>"; };
 		E8A86D011C66BF7A009EABB9 /* SMFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SMFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8A86D041C66BF7A009EABB9 /* SMFoundation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SMFoundation.h; sourceTree = "<group>"; };
 		E8A86D061C66BF7A009EABB9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -122,6 +124,7 @@
 				E8A86D261C66C157009EABB9 /* SMTimeHelper.m */,
 				E8A86D4B1C66CB06009EABB9 /* SMInfo.h */,
 				E8A86D4C1C66CB06009EABB9 /* SMInfo.m */,
+				E898241C1C73DCEE00600E66 /* SMNullabilityHelper.h */,
 			);
 			name = Public;
 			sourceTree = "<group>";
@@ -163,6 +166,7 @@
 				E8A86D051C66BF7A009EABB9 /* SMFoundation.h in Headers */,
 				E8A86D2F1C66C157009EABB9 /* SMOperationsQueue.h in Headers */,
 				E8A86D381C66C425009EABB9 /* SMDebugLog.h in Headers */,
+				E898241D1C73DD6C00600E66 /* SMNullabilityHelper.h in Headers */,
 				E8A86D2D1C66C157009EABB9 /* SMFileSignature.h in Headers */,
 				E8A86D291C66C157009EABB9 /* SMBuffer.h in Headers */,
 				E8A86D351C66C157009EABB9 /* SMTimeHelper.h in Headers */,
@@ -360,13 +364,14 @@
 		E8A86D0A1C66BF7A009EABB9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_NULLABLE_TO_NONNULL_CONVERSION = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = SMFoundation/PrefixHeader.pch;
 				INFOPLIST_FILE = SMFoundation/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -380,13 +385,14 @@
 		E8A86D0B1C66BF7A009EABB9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_NULLABLE_TO_NONNULL_CONVERSION = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = SMFoundation/PrefixHeader.pch;
 				INFOPLIST_FILE = SMFoundation/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";

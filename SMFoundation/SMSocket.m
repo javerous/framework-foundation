@@ -51,7 +51,7 @@ static BOOL doAsyncSocket(int sock);
 @property (assign, nonatomic) SMSocketOperation		operation;
 @property (assign, nonatomic) NSUInteger			size;
 @property (assign, nonatomic) NSUInteger			tag;
-@property (strong, nonatomic) id					context;
+@property (strong, nonatomic, nullable) id			context;
 
 @end
 

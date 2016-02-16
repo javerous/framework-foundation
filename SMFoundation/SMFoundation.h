@@ -39,3 +39,5 @@ FOUNDATION_EXPORT const unsigned char SMFoundationVersionString[];
 #import <SMFoundation/SMSpeedHelper.h>
 #import <SMFoundation/SMTimeHelper.h>
 #import <SMFoundation/SMInfo.h>
+
+#import <SMFoundation/SMNullabilityHelper.h>

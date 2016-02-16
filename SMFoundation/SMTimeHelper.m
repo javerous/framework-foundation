@@ -32,8 +32,8 @@
 
 double SMTimeStamp(void)
 {
-	static dispatch_once_t onceToken;
-	static double timeConvert = 0.0;
+	static dispatch_once_t	onceToken;
+	static double			timeConvert = 0.0;
 	
 	dispatch_once(&onceToken, ^{
 		mach_timebase_info_data_t timeBase;

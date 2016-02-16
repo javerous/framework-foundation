@@ -173,7 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
 	BSTOperationsItem *item = [[BSTOperationsItem alloc] init];
 	
 	item.operations = self;
-	item.queue = queue;
+	item.queue = (dispatch_queue_t)queue;
 	item.block = block;
 	
 	dispatch_async(_localQueue, ^{

@@ -27,6 +27,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
+** Defines
+*/
+#pragma mark - Defines
+
+// Rendering.
+#define SMInfoNameKey			@"name"
+#define SMInfoTextKey			@"text"
+#define SMInfoDynTextKey		@"dyn_text"
+#define SMInfoLocalizableKey	@"localizable"
+
+
+
+/*
 ** Types
 */
 #pragma mark - Types
@@ -67,12 +80,17 @@ typedef enum
 
 @property (strong, nonatomic, readonly) SMInfo		*subInfo;
 
-
 // -- Instance --
 + (SMInfo *)infoOfKind:(SMInfoKind)kind domain:(NSString *)domain code:(int)code;
 + (SMInfo *)infoOfKind:(SMInfoKind)kind domain:(NSString *)domain code:(int)code context:(nullable id)context;
 + (SMInfo *)infoOfKind:(SMInfoKind)kind domain:(NSString *)domain code:(int)code info:(nullable SMInfo *)info;
 + (SMInfo *)infoOfKind:(SMInfoKind)kind domain:(NSString *)domain code:(int)code context:(nullable id)context info:(nullable SMInfo *)info;
+
+// -- Rendering --
++ (void)registerRenderDescriptors:(NSDictionary *)descriptors localizer:(nullable NSString * (^)(NSString *token))localizer;
+
+- (NSString *)renderComplete;
+- (NSString *)renderMessage;
 
 @end
 

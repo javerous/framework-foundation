@@ -1,5 +1,5 @@
 /*
- *  PrefixHeader.pch
+ *  SMNullabilityHelper.h
  *
  *  Copyright 2016 Avérous Julien-Pierre
  *
@@ -20,17 +20,9 @@
  *
  */
 
-#ifndef PrefixHeader_pch
-# define PrefixHeader_pch
+#pragma once
 
-# import "SMDebugLog.h"
-
-# define SMLocalizedString(key, comment) ({											\
-	NSBundle *__bundle = [NSBundle bundleWithIdentifier:@"com.sourcemac.SMFoundation"];	\
-	if (__bundle == nil)															\
-		__bundle = [NSBundle mainBundle];											\
-	[__bundle localizedStringForKey:(key) value:@"" table:(nil)];					\
-})
-
-
-#endif /* PrefixHeader_pch */
+#define SMGuardReturn(NullableValue, NonnullValue)							\
+	if ((NullableValue) == nil)												\
+		return;																\
+	typeof(*(NullableValue)) * _Nonnull NonnullValue = (id)(NullableValue)

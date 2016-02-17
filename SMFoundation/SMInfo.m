@@ -184,6 +184,21 @@ static NSMutableDictionary *gLocalizers;
 	return descriptor;
 }
 
++ (NSString *)localizeToken:(NSString *)token forDomain:(NSString *)domain
+{
+	__block NSString *localized;
+	
+	dispatch_sync([self renderDescriptorQueue], ^{
+		NSString * (^localizer)(NSString *token) = gLocalizers[domain];
+		
+		if (localizer)
+			localized = localizer(token);
+		else
+			localized = NSLocalizedString(token, @"");
+	});
+
+	return localized;
+}
 
 #pragma mark Rendering
 
@@ -271,7 +286,7 @@ static NSMutableDictionary *gLocalizers;
 	if (msg)
 	{
 		if ([infos[SMInfoLocalizableKey] boolValue])
-			return NSLocalizedString(msg, @"");
+			return [[self class] localizeToken:msg forDomain:_domain];
 		else
 			return msg;
 	}

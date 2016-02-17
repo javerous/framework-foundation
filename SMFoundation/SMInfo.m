@@ -166,6 +166,9 @@ static NSMutableDictionary *gLocalizers;
 		if (!gDescriptors)
 			gDescriptors = [[NSMutableDictionary alloc] init];
 		
+		if (!gLocalizers)
+			gLocalizers = [[NSMutableDictionary alloc] init];
+		
 		[descriptors enumerateKeysAndObjectsUsingBlock:^(NSString *  _Nonnull domain, id  _Nonnull content, BOOL * _Nonnull stop) {
 			gDescriptors[domain] = content;
 			gLocalizers[domain] = localizer;

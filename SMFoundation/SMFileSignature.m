@@ -20,11 +20,10 @@
  *
  */
 
-#import <Security/Security.h>
-#import <Security/SecKey.h>
-#import <dlfcn.h>
+@import Security;
 
 #import <CommonCrypto/CommonCrypto.h>
+#import <dlfcn.h>
 
 #import "SMFileSignature.h"
 

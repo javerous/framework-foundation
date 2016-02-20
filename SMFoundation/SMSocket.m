@@ -112,6 +112,11 @@ static BOOL doAsyncSocket(int sock);
 */
 #pragma mark - SMSocket - Instance
 
++ (void)initialize
+{
+	[self registerInfoDescriptors];
+}
+
 - (nullable instancetype)initWithIP:(NSString *)ip port:(uint16_t)port
 {
 	NSAssert(ip, @"ip is nil");
@@ -654,6 +659,94 @@ static BOOL doAsyncSocket(int sock);
 	}
 	
 	return NO;
+}
+
+
+
+/*
+** SMSocket - Infos
+*/
+#pragma mark - SMSocket - Infos
+
++ (void)registerInfoDescriptors
+{
+	NSMutableDictionary *descriptors = [[NSMutableDictionary alloc] init];
+	
+	// == SMSocketInfoDomain ==
+	descriptors[SMSocketInfoDomain] = ^ NSDictionary * (SMInfoKind kind, int code) {
+		
+		switch (kind)
+		{
+			case SMInfoInfo:
+			{
+				break;
+			}
+			
+			case SMInfoWarning:
+			{
+				break;
+			}
+				
+			case SMInfoError:
+			{
+				switch ((SMSocketError)code)
+				{
+					case SMSocketErrorRead:
+					{
+						return @{
+							SMInfoNameKey : @"SMSocketErrorRead",
+							SMInfoTextKey : @"core_socket_read_error",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case SMSocketErrorReadClosed:
+					{
+						return @{
+							SMInfoNameKey : @"SMSocketErrorReadClosed",
+							SMInfoTextKey : @"core_socket_read_closed",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case SMSocketErrorReadFull:
+					{
+						return @{
+							SMInfoNameKey : @"SMSocketErrorReadFull",
+							SMInfoTextKey : @"core_socker_read_full",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case SMSocketErrorWrite:
+					{
+						return @{
+							SMInfoNameKey : @"SMSocketErrorWrite",
+							SMInfoTextKey : @"core_socket_write_error",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+						
+					case SMSocketErrorWriteClosed:
+					{
+						return @{
+							SMInfoNameKey : @"SMSocketErrorWriteClosed",
+							SMInfoTextKey : @"core_socket_write_closed",
+							SMInfoLocalizableKey : @YES,
+						};
+					}
+				}
+				
+				break;
+			}
+		}
+		
+		return nil;
+	};
+	
+	[SMInfo registerDomainsDescriptors:descriptors localizer:^NSString * _Nonnull(NSString * _Nonnull token) {
+		return SMLocalizedString(token, @"");
+	}];
 }
 
 @end

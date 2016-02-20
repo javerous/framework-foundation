@@ -17,3 +17,10 @@
 "time_hours" = "heures";
 "time_minutes" = "minutes";
 "time_seconds" = "secondes";
+
+// SMSocketInfoDomain
+"core_socket_read_error" = "Erreur de lecture sur un socket.";
+"core_socket_read_closed" = "Un socket a été fermé par l'hôte distant lors d'une lecture.";
+"core_socker_read_full" = "La cache d'un socket est pleine. Impossible de recevoir plus de données.";
+"core_socket_write_error" = "Erreur d'écriture sur un socket.";
+"core_socket_write_closed" = "Un socket a été fermé par l'hôte distant lors d'une écriture.";

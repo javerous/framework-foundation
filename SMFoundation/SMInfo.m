@@ -128,12 +128,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
-** SMInfo - Rendering
+** SMInfo - Descriptors
 */
-#pragma mark - SMInfo - Rendering
+#pragma mark - SMInfo - Descriptors
 
-#pragma mark Descriptors
-
+static NSMutableDictionary *gDescriptorsBuilders;
 static NSMutableDictionary *gDescriptors;
 static NSMutableDictionary *gLocalizers;
 
@@ -149,28 +148,21 @@ static NSMutableDictionary *gLocalizers;
 	return descriptorQueue;
 }
 
-+ (void)registerRenderDescriptors:(NSDictionary *)descriptors localizer:(nullable NSString * (^)(NSString *token))localizer
++ (void)registerDomainsDescriptors:(NSDictionary *)descriptors localizer:(nullable SMInfoLocalizer)localizer
 {
-	if (!localizer)
-	{
-		NSBundle *bundle = [NSBundle mainBundle];
-		
-		localizer = ^ NSString * (NSString *token) {
-			return [bundle localizedStringForKey:token value:@"" table:nil];
-		};
-	}
+	NSAssert(descriptors, @"descriptors is nil");
 	
 	// Store items.
 	dispatch_async([self renderDescriptorQueue], ^{
 		
-		if (!gDescriptors)
-			gDescriptors = [[NSMutableDictionary alloc] init];
+		if (!gDescriptorsBuilders)
+			gDescriptorsBuilders = [[NSMutableDictionary alloc] init];
 		
 		if (!gLocalizers)
 			gLocalizers = [[NSMutableDictionary alloc] init];
 		
-		[descriptors enumerateKeysAndObjectsUsingBlock:^(NSString *  _Nonnull domain, id  _Nonnull content, BOOL * _Nonnull stop) {
-			gDescriptors[domain] = content;
+		[descriptors enumerateKeysAndObjectsUsingBlock:^(NSString *  _Nonnull domain, SMInfoDescriptorBuilder _Nonnull builder, BOOL * _Nonnull stop) {
+			gDescriptorsBuilders[domain] = builder;
 			gLocalizers[domain] = localizer;
 		}];
 	});
@@ -181,7 +173,40 @@ static NSMutableDictionary *gLocalizers;
 	__block NSDictionary *descriptor;
 	
 	dispatch_sync([self renderDescriptorQueue], ^{
+		
 		descriptor = gDescriptors[domain][@(kind)][@(code)];
+		
+		if (!descriptor)
+		{
+			SMInfoDescriptorBuilder builder = gDescriptorsBuilders[domain];
+			
+			descriptor = builder(kind, code);
+			
+			if (descriptor)
+			{
+				
+				if (!gDescriptors)
+					gDescriptors = [[NSMutableDictionary alloc] init];
+				
+				NSMutableDictionary *kinds = gDescriptors[domain];
+				
+				if (!kinds)
+				{
+					kinds = [[NSMutableDictionary alloc] init];
+					gDescriptors[domain] = kinds;
+				}
+				
+				NSMutableDictionary *codes = kinds[@(kind)];
+				
+				if (!codes)
+				{
+					codes = [[NSMutableDictionary alloc] init];
+					kinds[@(kind)] = codes;
+				}
+				
+				codes[@(code)] = descriptor;
+			}
+		}
 	});
 	
 	return descriptor;
@@ -203,7 +228,12 @@ static NSMutableDictionary *gLocalizers;
 	return localized;
 }
 
-#pragma mark Rendering
+
+
+/*
+** SMInfo - Rendering
+*/
+#pragma mark - SMInfo - Rendering
 
 - (NSString *)renderComplete
 {
@@ -280,10 +310,10 @@ static NSMutableDictionary *gLocalizers;
 	
 	if (!msg)
 	{
-		NSString * (^dyn)(SMInfo *) =  infos[SMInfoDynTextKey];
+		NSString * (^dyn)(id context) =  infos[SMInfoDynTextKey];
 		
 		if (dyn)
-			msg = dyn(self);
+			msg = dyn(self.context);
 	}
 	
 	if (msg)

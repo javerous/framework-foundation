@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - Defines
 
-// Rendering.
+// Descriptor.
 #define SMInfoNameKey			@"name"
 #define SMInfoTextKey			@"text"
 #define SMInfoDynTextKey		@"dyn_text"
@@ -50,6 +50,9 @@ typedef enum
 	SMInfoWarning,
 	SMInfoError,
 } SMInfoKind;
+
+typedef NSDictionary * _Nullable (^SMInfoDescriptorBuilder)(SMInfoKind kind, int code);
+typedef NSString * _Nullable (^SMInfoLocalizer)(NSString *token);
 
 
 
@@ -86,9 +89,10 @@ typedef enum
 + (SMInfo *)infoOfKind:(SMInfoKind)kind domain:(NSString *)domain code:(int)code info:(nullable SMInfo *)info;
 + (SMInfo *)infoOfKind:(SMInfoKind)kind domain:(NSString *)domain code:(int)code context:(nullable id)context info:(nullable SMInfo *)info;
 
-// -- Rendering --
-+ (void)registerRenderDescriptors:(NSDictionary *)descriptors localizer:(nullable NSString * (^)(NSString *token))localizer;
+// -- Descriptors --
++ (void)registerDomainsDescriptors:(NSDictionary *)descriptors localizer:(nullable SMInfoLocalizer)localizer;
 
+// -- Rendering --
 - (NSString *)renderComplete;
 - (NSString *)renderMessage;
 

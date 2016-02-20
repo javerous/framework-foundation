@@ -17,3 +17,10 @@
 "time_hours" = "hours";
 "time_minutes" = "minutes";
 "time_seconds" = "seconds";
+
+// SMSocketInfoDomain
+"core_socket_read_error" = "Socket read error.";
+"core_socket_read_closed" = "Socket was closed by remote peer on read.";
+"core_socker_read_full" = "Socket buffer is full. Unable to buffer more data.";
+"core_socket_write_error" = "Socket write error.";
+"core_socket_write_closed" = "Socket was closed by remote peer on write.";

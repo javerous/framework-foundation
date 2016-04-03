@@ -29,6 +29,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
+** SMSpeedStatement
+*/
+#pragma mark - SMSpeedStatement
+
+@interface SMSpeedStatement : NSObject
+
+@property (assign, nonatomic) NSUInteger	amount;
+@property (assign, nonatomic) double		timestamp;
+
+@end
+
+@implementation SMSpeedStatement
+@end
+
+
+
+/*
 ** SMSpeedHelper
 */
 #pragma mark - SMSpeedHelper
@@ -41,11 +58,11 @@ NS_ASSUME_NONNULL_BEGIN
 	NSUInteger	_completeAmount;
 	
 	double			_lastSet;
-	NSMutableArray	*_amounts;
-	NSMutableArray	*_timestamps;
+	NSMutableArray	*_statements;
 
 	dispatch_source_t	_timer;
-	BOOL				_isTimer;
+	
+	void (^_updateHandler)(NSTimeInterval);
 }
 
 
@@ -63,13 +80,43 @@ NS_ASSUME_NONNULL_BEGIN
 		_localQueue = dispatch_queue_create("com.smfoundation.speed-helper.local", DISPATCH_QUEUE_SERIAL);
 		_completeAmount = amount;
 		
-		_amounts = [[NSMutableArray alloc] init];
-		_timestamps = [[NSMutableArray alloc] init];
+		_statements = [[NSMutableArray alloc] init];
 	}
 	
 	return self;
 }
 
+
+
+/*
+** SMSpeedHelper - Properties
+*/
+#pragma mark - SMSpeedHelper - Properties
+
+- (void)setUpdateHandler:(void (^ _Nullable)(NSTimeInterval))updateHandler
+{
+	dispatch_async(_localQueue, ^{
+		
+		_updateHandler = updateHandler;
+		
+		if (!_updateHandler && _timer)
+		{
+			dispatch_source_cancel(_timer);
+			_timer = nil;
+		}
+	});
+}
+
+- (void (^ _Nullable)(NSTimeInterval))updateHandler
+{
+	__block void (^result)(NSTimeInterval) = nil;
+	
+	dispatch_sync(_localQueue, ^{
+		result = _updateHandler;
+	});
+	
+	return result;
+}
 
 
 /*
@@ -101,6 +148,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_setCurrentAmount:(NSUInteger)currentAmout timestamp:(double)ts
 {
+	// > _localQueue <
+	
 	if (currentAmout == 0 || currentAmout > _completeAmount || currentAmout < _currentAmount)
 		return;
 	
@@ -108,46 +157,42 @@ NS_ASSUME_NONNULL_BEGIN
 		return;
 	
 	// Update stats.
-	_lastSet = ts;
+	SMSpeedStatement *statement = [[SMSpeedStatement alloc] init];
 	
+	_lastSet = ts;
 	_currentAmount = currentAmout;
 	
-	[_amounts addObject:@(currentAmout)];
-	[_timestamps addObject:@(ts)];
+	statement.amount = currentAmout;
+	statement.timestamp = ts;
 	
-	if (_amounts.count > 5)
-		[_amounts removeObjectAtIndex:0];
+	[_statements addObject:statement];
 	
-	if (_timestamps.count > 5)
-		[_timestamps removeObjectAtIndex:0];
+	if (_statements.count > 10)
+		[_statements removeObjectAtIndex:0];
 	
 	// Start timer if necessary.
-	if (_isTimer == NO && _amounts.count >= 2)
+	if (_updateHandler && _timer == nil && _statements.count >= 2)
 	{
-		void (^updateHandler)(NSTimeInterval remainingTime) = self.updateHandler;
+		__weak SMSpeedHelper *weakSelf = self;
+
+		_timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _localQueue);
 		
-		if (updateHandler)
-		{
-			__weak SMSpeedHelper *weakSelf = self;
+		dispatch_source_set_timer(_timer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 0);
+		
+		dispatch_source_set_event_handler(_timer, ^{
 			
-			_timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _localQueue);
+			SMSpeedHelper *strongSelf = weakSelf;
 			
-			dispatch_source_set_timer(_timer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 0);
+			if (!strongSelf)
+				return;
 			
-			dispatch_source_set_event_handler(_timer, ^{
-				
-				SMSpeedHelper *strongSelf = weakSelf;
-				
-				if (!strongSelf)
-					return;
-				
+			void (^updateHandler)(NSTimeInterval) = strongSelf->_updateHandler;
+
+			if (updateHandler)
 				updateHandler([strongSelf _remainingTime]);
-			});
-			
-			dispatch_resume(_timer);
-			
-			_isTimer = YES;
-		}
+		});
+		
+		dispatch_resume(_timer);
 	}
 }
 
@@ -173,21 +218,34 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	// > localQueue <
 	
-	if (_timestamps.count < 2 || _amounts.count < 2)
+	NSUInteger	i, count = _statements.count;
+	double		sumWeightedSpeed = 0.0;
+	NSUInteger	sumWeight = 0;
+	
+	if (count < 2)
 		return -2.0;
 	
-	double ts1 = [[_timestamps firstObject] doubleValue];
-	double ts2 = [[_timestamps lastObject] doubleValue];
+	// Compute weighted average.
+	for (i = 1; i < count; i++)
+	{
+		// > Get following statements.
+		SMSpeedStatement *st1, *st2;
+ 
+		st1 = _statements[i - 1];
+		st2 = _statements[i];
+		
+		// > Compute delta time.
+		double deltaTime = st2.timestamp - st1.timestamp;
+		
+		if (deltaTime <= 0)
+			continue;
+		
+		// > Compute weighted speed.
+		sumWeightedSpeed += ((double)(st2.amount - st1.amount) / deltaTime) * (double)i;
+		sumWeight += i;
+	}
 	
-	NSUInteger am1 = [[_amounts firstObject] unsignedIntegerValue];
-	NSUInteger am2 = [[_amounts lastObject] unsignedIntegerValue];
-	
-	double delta = (ts2 - ts1);
-	
-	if (delta == 0)
-		return 0;
-	
-	return (double)(am2 - am1) / delta;
+	return sumWeightedSpeed / (double)sumWeight;
 }
 
 - (NSTimeInterval)remainingTime

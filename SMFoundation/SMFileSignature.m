@@ -20,7 +20,7 @@
  *
  */
 
-@import Security;
+#import <Security/Security.h>
 
 #import <CommonCrypto/CommonCrypto.h>
 #import <dlfcn.h>

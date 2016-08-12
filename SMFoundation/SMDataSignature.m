@@ -63,7 +63,10 @@ NS_ASSUME_NONNULL_BEGIN
 	if (SecTransformSetAttribute(verifyTransform, kSecInputIsAttributeName, kSecInputIsPlainText, NULL) != true)
 		goto end;
 	
-	if (SecTransformSetAttribute(verifyTransform, kSecDigestTypeAttribute, kSecDigestSHA1, NULL) != true)
+	if (SecTransformSetAttribute(verifyTransform, kSecDigestTypeAttribute, kSecDigestSHA2, NULL) != true)
+		goto end;
+	
+	if (SecTransformSetAttribute(verifyTransform, kSecDigestLengthAttribute, (__bridge CFNumberRef)@(256), NULL) != true)
 		goto end;
 	
 	// Set signature input.

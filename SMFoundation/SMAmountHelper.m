@@ -115,11 +115,26 @@ NSString * SMStringFromSecondsAmount(NSTimeInterval doubleSeconds)
 	
 	// Compose result.
 	if (days)
-		return [NSString stringWithFormat:@"%lu %@, %lu %@", days, SMLocalizedString(@"time_days", @""), hours, SMLocalizedString(@"time_hours", @"")];
+	{
+		if (hours)
+			return [NSString stringWithFormat:@"%lu %@, %lu %@", days, SMLocalizedString(@"time_days", @""), hours, SMLocalizedString(@"time_hours", @"")];
+		else
+			return [NSString stringWithFormat:@"%lu %@", days, SMLocalizedString(@"time_days", @"")];
+	}
 	else if (hours)
-		return [NSString stringWithFormat:@"%lu %@, %lu %@", hours, SMLocalizedString(@"time_hours", @""), minutes, SMLocalizedString(@"time_minutes", @"")];
+	{
+		if (minutes)
+			return [NSString stringWithFormat:@"%lu %@, %lu %@", hours, SMLocalizedString(@"time_hours", @""), minutes, SMLocalizedString(@"time_minutes", @"")];
+		else
+			return [NSString stringWithFormat:@"%lu %@", hours, SMLocalizedString(@"time_hours", @"")];
+	}
 	else if (minutes)
-		return [NSString stringWithFormat:@"%lu %@, %lu %@", minutes, SMLocalizedString(@"time_minutes", @""), seconds, SMLocalizedString(@"time_seconds", @"")];
+	{
+		if (seconds)
+			return [NSString stringWithFormat:@"%lu %@, %lu %@", minutes, SMLocalizedString(@"time_minutes", @""), seconds, SMLocalizedString(@"time_seconds", @"")];
+		else
+			return [NSString stringWithFormat:@"%lu %@", minutes, SMLocalizedString(@"time_minutes", @"")];
+	}
 	else
 		return [NSString stringWithFormat:@"%lu %@", seconds, SMLocalizedString(@"time_seconds", @"")];
 }

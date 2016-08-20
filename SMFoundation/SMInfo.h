@@ -94,7 +94,7 @@ typedef NSString * _Nullable (^SMInfoLocalizer)(NSString *token);
 
 // -- Rendering --
 - (NSString *)renderComplete;
-- (NSString *)renderMessage;
+- (nullable NSString *)renderMessage;
 
 @end
 

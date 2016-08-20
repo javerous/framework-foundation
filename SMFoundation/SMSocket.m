@@ -225,7 +225,7 @@ static BOOL doAsyncSocket(int sock);
 				else
 				{
 					// Append data to the buffer
-					[_readBuffer appendBytes:buffer ofSize:(NSUInteger)sz copy:NO];
+					[_readBuffer appendBytes:buffer size:(NSUInteger)sz copy:NO];
 					
 					// Manage datas
 					[self _dataAvailable];
@@ -250,7 +250,7 @@ static BOOL doAsyncSocket(int sock);
 			else
 			{
 				char		buffer[4096];
-				NSUInteger	size = [_writeBuffer readBytes:buffer ofSize:sizeof(buffer)];
+				NSUInteger	size = [_writeBuffer readBytes:buffer size:sizeof(buffer)];
 				ssize_t		sz;
 				
 				// Write data
@@ -269,7 +269,7 @@ static BOOL doAsyncSocket(int sock);
 				{
 					// Reinject remaining data in the buffer
 					if (sz < size)
-						[_writeBuffer pushBytes:buffer + sz ofSize:(size - (NSUInteger)sz) copy:YES];
+						[_writeBuffer pushBytes:buffer + sz size:(size - (NSUInteger)sz) copy:YES];
 					
 					// If we have space, signal it to fill if necessary
 					id <SMSocketDelegate> delegate = _delegate;
@@ -356,7 +356,7 @@ static BOOL doAsyncSocket(int sock);
 
 - (BOOL)sendBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy
 {
-	NSAssert(bytes, @"bytes is nil");
+	NSAssert(bytes, @"bytes is NULL");
 	NSAssert(size > 0, @"size is zero");
 	
 	void *cpy = NULL;
@@ -382,7 +382,7 @@ static BOOL doAsyncSocket(int sock);
 		}
 		
 		// Append data in write buffer
-		[_writeBuffer appendBytes:cpy ofSize:size copy:NO];
+		[_writeBuffer appendBytes:cpy size:size copy:NO];
 		
 		// Activate write if needed
 		if ([_writeBuffer size] > 0 && !_writeActive)
@@ -559,8 +559,7 @@ static BOOL doAsyncSocket(int sock);
 {
 	// > socketQueue <
 	
-	if (!operation)
-		return NO;
+	NSAssert(operation, @"operation is nil");
 	
 	// Check delegate.
 	id <SMSocketDelegate> delegate = _delegate;
@@ -592,7 +591,7 @@ static BOOL doAsyncSocket(int sock);
 			NSData		*data;
 			
 			// Read the chunk of data.
-			size = [_readBuffer readBytes:buffer ofSize:size];
+			size = [_readBuffer readBytes:buffer size:size];
 			
 			data = [[NSData alloc] initWithBytesNoCopy:buffer length:size freeWhenDone:YES];
 			

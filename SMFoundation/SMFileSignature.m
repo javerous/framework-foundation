@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - SMFileSignature - Key Generation
 
-+ (NSDictionary *)generateKeyPairsOfSize:(NSUInteger)keySize
++ (nullable NSDictionary *)generateKeyPairsOfSize:(NSUInteger)keySize
 {
 	// Configure generation.
 	NSMutableDictionary	*keyPairAttr = [[NSMutableDictionary alloc] init];
@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - SMFileSignature - Signatures
 
-+ (NSData *)signContentsOfURL:(NSURL *)url withPrivateKey:(NSData *)privateKey
++ (nullable NSData *)signContentsOfURL:(NSURL *)url withPrivateKey:(NSData *)privateKey
 {
 	NSAssert(url, @"url is nil");
 	NSAssert(privateKey, @"privateKey is nil");
@@ -220,7 +220,7 @@ end:
 */
 #pragma mark - SMFileSignature - Key Serialization
 
-+ (NSData *)dataFromKey:(SecKeyRef)cryptoKey
++ (nullable NSData *)dataFromKey:(SecKeyRef)cryptoKey
 {
 	NSAssert(cryptoKey, @"cryptoKey is nil");
 	

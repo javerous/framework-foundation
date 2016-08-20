@@ -44,10 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SMFileSignature : NSObject
 
 // -- Key Generation --
-+ (NSDictionary *)generateKeyPairsOfSize:(NSUInteger)keySize;
++ (nullable NSDictionary *)generateKeyPairsOfSize:(NSUInteger)keySize;
 
 // -- Signatures --
-+ (NSData *)signContentsOfURL:(NSURL *)aURL withPrivateKey:(NSData *)privateKey;
++ (nullable NSData *)signContentsOfURL:(NSURL *)aURL withPrivateKey:(NSData *)privateKey;
 + (BOOL)validateSignature:(NSData *)signature forContentsOfURL:(NSURL *)aURL withPublicKey:(NSData *)publicKey;
 
 @end

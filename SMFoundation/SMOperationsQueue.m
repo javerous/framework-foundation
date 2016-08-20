@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - SMOperationsQueue - Instance
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
 	
@@ -94,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (id)initStarted
+- (instancetype)initStarted
 {
 	self = [self init];
 	
@@ -242,8 +242,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	// > localQueue <
 	
-	if (!item)
-		return;
+	NSAssert(item, @"item is nil");
 	
 	// Mark as executing.
 	_isExecuting = YES;
@@ -259,8 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
 			
 			dispatch_async(_localQueue, ^{
 				
-				if (executed)
-					return;
+				NSAssert(!executed, @"control already executed");
 				
 				executed = YES;
 				_isExecuting = NO;
@@ -286,14 +284,13 @@ NS_ASSUME_NONNULL_BEGIN
 		// > Cancelation.
 		SMOperationsAddCancelBlock addCancelBlock = ^(dispatch_block_t cancelBlock) {
 			
-			if (!cancelBlock)
-				return;
+			NSAssert(cancelBlock, @"cancelBlock is nil");
+
 			
 			dispatch_async(_localQueue, ^{
 				
 				// Can't add cancel block after the operation is fully executed.
-				if (executed)
-					return;
+				NSAssert(!executed, @"control already executed");
 				
 				// If already canceled, cancel right now.
 				if (_isCanceled)

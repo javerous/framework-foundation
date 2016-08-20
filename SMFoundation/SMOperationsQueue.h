@@ -55,8 +55,8 @@ typedef void (^SMOperationsCancelableBlock)(SMOperationsControl ctrl, SMOperatio
 @property (strong, atomic, nullable) dispatch_queue_t defaultQueue;
 
 // -- Instance --
-- (id)init;
-- (id)initStarted;
+- (instancetype)init;
+- (instancetype)initStarted;
 
 // -- Schedule --
 - (void)scheduleBlock:(SMOperationsBlock)block;

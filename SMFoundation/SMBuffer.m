@@ -92,7 +92,7 @@ size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, siz
 */
 #pragma mark - SMBuffer - Instance
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
 	
@@ -123,10 +123,10 @@ size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, siz
 */
 #pragma mark - SMBuffer - Bytes
 
-- (void)pushBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy
+- (void)pushBytes:(const void *)bytes size:(NSUInteger)size copy:(BOOL)copy
 {
 	NSAssert(size > 0, @"size is zero");
-	NSAssert(bytes, @"bytes is nil");
+	NSAssert(bytes, @"bytes is NULL");
 	
 	sm_item	*item = (sm_item *)(malloc(sizeof(sm_item)));
 	
@@ -160,7 +160,7 @@ size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, siz
 	_items->size += size;
 }
 
-- (void)appendBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy
+- (void)appendBytes:(const void *)bytes size:(NSUInteger)size copy:(BOOL)copy
 {
 	NSAssert(size > 0, @"size is zero");
 	NSAssert(bytes, @"bytes is nil");
@@ -197,7 +197,7 @@ size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, siz
 	_items->size += size;
 }
 
-- (NSUInteger)readBytes:(void *)bytes ofSize:(NSUInteger)size
+- (NSUInteger)readBytes:(void *)bytes size:(NSUInteger)size
 {
 	NSAssert(size > 0, @"size is zero");
 	NSAssert(bytes, @"bytes is nil");
@@ -250,7 +250,7 @@ size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, siz
 			
 			memcpy(buff, (char *)tmp->data + part, rest);
 			
-			[self pushBytes:buff ofSize:rest copy:NO];
+			[self pushBytes:buff size:rest copy:NO];
 		}
 		
 		// Clean item
@@ -268,9 +268,9 @@ size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, siz
 */
 #pragma mark - SMBuffer - Tools
 
-- (NSData *)dataUpToCStr:(const char *)search includeSearch:(BOOL)includeSearch
+- (nullable NSData *)dataUpToCStr:(const char *)search includeSearch:(BOOL)includeSearch
 {
-	NSAssert(search, @"search is nil");
+	NSAssert(search, @"search is NULL");
 	
 	bool		found = false;
 	size_t		sz = 0;
@@ -300,7 +300,7 @@ size_t memsearch(const uint8_t *token, size_t token_sz, const uint8_t *data, siz
 	{
 		void *result = malloc(sz);
 		
-		[self readBytes:result ofSize:sz];
+		[self readBytes:result size:sz];
 		
 		if (!includeSearch)
 			sz -= search_len;

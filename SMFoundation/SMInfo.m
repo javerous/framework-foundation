@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 	return info;
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
 	
@@ -303,7 +303,7 @@ static NSMutableDictionary *gLocalizers;
 	return result;
 }
 
-- (NSString *)renderMessage
+- (nullable NSString *)renderMessage
 {
 	NSDictionary	*infos = [[self class] renderDescriptorForDomain:_domain kind:_kind code:_code];
 	NSString		*msg = infos[SMInfoTextKey];

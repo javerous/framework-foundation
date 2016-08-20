@@ -34,13 +34,13 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SMBuffer : NSObject
 
 // -- Bytes --
-- (void)pushBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy; 	// Insert at the beggin
-- (void)appendBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy;	// Insert at the end
+- (void)pushBytes:(const void *)bytes size:(NSUInteger)size copy:(BOOL)copy; 	// Insert at the beggin
+- (void)appendBytes:(const void *)bytes size:(NSUInteger)size copy:(BOOL)copy;	// Insert at the end
 
-- (NSUInteger)readBytes:(void *)bytes ofSize:(NSUInteger)size; // Read data from beggin
+- (NSUInteger)readBytes:(void *)bytes size:(NSUInteger)size; // Read data from beggin
 
 // -- Tools --
-- (NSData *)dataUpToCStr:(const char *)search includeSearch:(BOOL)includeSearch; // Read data up to the string "search"
+- (nullable NSData *)dataUpToCStr:(const char *)search includeSearch:(BOOL)includeSearch; // Read data up to the string "search"
 
 - (void)clean;
 - (void)print;

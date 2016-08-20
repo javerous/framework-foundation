@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SMSignatureHelper : NSObject
 
-+ (SecKeyRef)copyKeyFromData:(NSData *)data isPrivate:(BOOL)private;
++ (nullable SecKeyRef)copyKeyFromData:(NSData *)data isPrivate:(BOOL)private;
 
 @end
 

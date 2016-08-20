@@ -33,11 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SMSignatureHelper
 
-+ (SecKeyRef)copyKeyFromData:(NSData *)data isPrivate:(BOOL)private
++ (nullable SecKeyRef)copyKeyFromData:(NSData *)data isPrivate:(BOOL)private
 {
-	if (!data)
-		return NULL;
-	
+	NSAssert(data, @"data is nil");
+
 	// Set import settings.
 	CFArrayRef							attributes = NULL;
 	SecItemImportExportKeyParameters	params;

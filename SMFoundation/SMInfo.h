@@ -44,12 +44,11 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - Types
 
-typedef enum
-{
+typedef NS_ENUM(unsigned int, SMInfoKind) {
 	SMInfoInfo,
 	SMInfoWarning,
 	SMInfoError,
-} SMInfoKind;
+};
 
 typedef NSDictionary * _Nullable (^SMInfoDescriptorBuilder)(SMInfoKind kind, int code);
 typedef NSString * _Nullable (^SMInfoLocalizer)(NSString *token);
@@ -93,8 +92,8 @@ typedef NSString * _Nullable (^SMInfoLocalizer)(NSString *token);
 + (void)registerDomainsDescriptors:(NSDictionary *)descriptors localizer:(nullable SMInfoLocalizer)localizer;
 
 // -- Rendering --
-- (NSString *)renderComplete;
-- (nullable NSString *)renderMessage;
+@property (nonatomic, readonly, copy) NSString * _Nonnull renderComplete;
+@property (nonatomic, readonly, copy) NSString * _Nullable renderMessage;
 
 @end
 

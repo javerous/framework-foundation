@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SMDataSignature
 
-+ (BOOL)validateSignature:(NSData *)signature forData:(NSData *)data withPublicKey:(NSData *)publicKey
++ (BOOL)validateSignature:(NSData *)signature data:(NSData *)data publicKey:(NSData *)publicKey
 {
 	NSAssert(signature.length > 0, @"signature is empty");
 	NSAssert(data.length > 0, @"data is empty");
@@ -82,7 +82,7 @@ end:
 	if (verifyTransform)
 		CFRelease(verifyTransform);
 
-	return [result boolValue];
+	return result.boolValue;
 }
 
 @end

@@ -51,8 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
 	// Configure generation.
 	NSMutableDictionary	*keyPairAttr = [[NSMutableDictionary alloc] init];
 
-	[keyPairAttr setObject:(id)kSecAttrKeyTypeRSA forKey:(id)kSecAttrKeyType];
-	[keyPairAttr setObject:@(keySize) forKey:(id)kSecAttrKeySizeInBits];
+	keyPairAttr[(id)kSecAttrKeyType] = (id)kSecAttrKeyTypeRSA;
+	keyPairAttr[(id)kSecAttrKeySizeInBits] = @(keySize);
 	
 	// Generate.
 	SecKeyRef	publicKeyRef;
@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - SMFileSignature - Signatures
 
-+ (nullable NSData *)signContentsOfURL:(NSURL *)url withPrivateKey:(NSData *)privateKey
++ (nullable NSData *)signedDataWithContentsOfURL:(NSURL *)url privateKey:(NSData *)privateKey
 {
 	NSAssert(url, @"url is nil");
 	NSAssert(privateKey, @"privateKey is nil");
@@ -147,7 +147,7 @@ end:
 	return result;
 }
 
-+ (BOOL)validateSignature:(NSData *)signature forContentsOfURL:(NSURL *)url withPublicKey:(NSData *)publicKey
++ (BOOL)validateSignature:(NSData *)signature fileURL:(NSURL *)url publicKey:(NSData *)publicKey
 {
 	NSAssert(signature, @"signature is nil");
 	NSAssert(url, @"url is nil");
@@ -210,7 +210,7 @@ end:
 		CFRelease(readStream);
 	}
 
-	return [result boolValue];
+	return result.boolValue;
 }
 
 

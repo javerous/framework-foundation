@@ -354,7 +354,7 @@ static BOOL doAsyncSocket(int sock);
 */
 #pragma mark - SMSocket - Sending
 
-- (BOOL)sendBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy
+- (BOOL)sendBytes:(const void *)bytes size:(NSUInteger)size copy:(BOOL)copy
 {
 	NSAssert(bytes, @"bytes is NULL");
 	NSAssert(size > 0, @"size is zero");
@@ -411,7 +411,7 @@ static BOOL doAsyncSocket(int sock);
 */
 #pragma mark - SMSocket - Operations
 
-- (void)setGlobalOperation:(SMSocketOperation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag
+- (void)setGlobalOperation:(SMSocketOperation)operation size:(NSUInteger)size tag:(NSUInteger)tag
 {
 	dispatch_async(_socketQueue, ^{
 		
@@ -435,7 +435,7 @@ static BOOL doAsyncSocket(int sock);
 	});
 }
 
-- (void)scheduleOperation:(SMSocketOperation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag
+- (void)scheduleOperation:(SMSocketOperation)operation size:(NSUInteger)size tag:(NSUInteger)tag
 {
 	dispatch_async(_socketQueue, ^{
 		
@@ -539,7 +539,7 @@ static BOOL doAsyncSocket(int sock);
 	else
 	{
 		NSMutableIndexSet	*indexes = [[NSMutableIndexSet alloc] init];
-		NSUInteger			i, count = [_operations count];
+		NSUInteger			i, count = _operations.count;
 		
 		for (i = 0; i < count; i++)
 		{
@@ -624,7 +624,7 @@ static BOOL doAsyncSocket(int sock);
 			while (1)
 			{
 				// Check that we have the amount of line needed.
-				if (max > 0 && [lines count] >= max)
+				if (max > 0 && lines.count >= max)
 					break;
 				
 				// Get line
@@ -638,11 +638,11 @@ static BOOL doAsyncSocket(int sock);
 			}
 			
 			// Check that we have lines
-			if ([lines count] == 0)
+			if (lines.count == 0)
 				return NO;
 			
 			// Check that we have enought lines.
-			if (max > 0 && [lines count] < max)
+			if (max > 0 && lines.count < max)
 				return NO;
 			
 			// Clean context (the delegate is responsive to deallocate lines).

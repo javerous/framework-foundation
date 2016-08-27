@@ -47,8 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSDictionary *)generateKeyPairsOfSize:(NSUInteger)keySize;
 
 // -- Signatures --
-+ (nullable NSData *)signContentsOfURL:(NSURL *)aURL withPrivateKey:(NSData *)privateKey;
-+ (BOOL)validateSignature:(NSData *)signature forContentsOfURL:(NSURL *)aURL withPublicKey:(NSData *)publicKey;
++ (nullable NSData *)signedDataWithContentsOfURL:(NSURL *)aURL privateKey:(NSData *)privateKey;
++ (BOOL)validateSignature:(NSData *)signature fileURL:(NSURL *)aURL publicKey:(NSData *)publicKey;
 
 @end
 

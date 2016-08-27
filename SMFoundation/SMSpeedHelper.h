@@ -34,17 +34,19 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SMSpeedHelper : NSObject
 
 // -- Instance --
-- (instancetype)initWithCompleteAmount:(NSUInteger)amount;
+- (instancetype)initWithCompleteAmount:(NSUInteger)amount NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // -- Update --
 - (void)setCurrentAmount:(NSUInteger)amount;
 - (void)addAmount:(NSUInteger)amount;
 
 // -- Compute --
-- (double)averageSpeed;
-- (NSTimeInterval)remainingTime;
+@property (atomic, readonly) double			averageSpeed;
+@property (atomic, readonly) NSTimeInterval	remainingTime;
 
-@property (strong, atomic, nullable) void (^updateHandler)(NSTimeInterval remainingTime);
+@property (nullable, atomic) void (^updateHandler)(NSTimeInterval remainingTime);
 
 @end
 

@@ -31,11 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - Types
 
-typedef enum
-{
+typedef NS_ENUM(unsigned int, SMOperationsControlType) {
 	SMOperationsControlContinue,
 	SMOperationsControlFinish
-} SMOperationsControlType;
+};
 
 typedef void (^SMOperationsControl)(SMOperationsControlType type);
 typedef void (^SMOperationsBlock)(SMOperationsControl ctrl);
@@ -55,7 +54,7 @@ typedef void (^SMOperationsCancelableBlock)(SMOperationsControl ctrl, SMOperatio
 @property (strong, atomic, nullable) dispatch_queue_t defaultQueue;
 
 // -- Instance --
-- (instancetype)init;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initStarted;
 
 // -- Schedule --

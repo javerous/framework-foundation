@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SMDataSignature : NSObject
 
-+ (BOOL)validateSignature:(NSData *)signature forData:(NSData *)data withPublicKey:(NSData *)publicKey;
++ (BOOL)validateSignature:(NSData *)signature data:(NSData *)data publicKey:(NSData *)publicKey;
 
 @end
 

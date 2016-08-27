@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)print;
 
 // -- Properties --
-- (NSUInteger)size;
+@property (nonatomic, readonly) NSUInteger size;
 
 @end
 

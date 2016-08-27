@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	result = (__bridge_transfer NSArray *)items;
 	
-	if ([result count] == 0)
+	if (result.count == 0)
 		return nil;
 	
 	// Give result.

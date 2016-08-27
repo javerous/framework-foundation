@@ -52,22 +52,20 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Types
 
 // == Socket Errors ==
-typedef enum
-{
+typedef NS_ENUM(unsigned int, SMSocketError) {
     SMSocketErrorReadClosed,
 	SMSocketErrorRead,
 	SMSocketErrorReadFull,
 	
 	SMSocketErrorWriteClosed,
 	SMSocketErrorWrite,
-} SMSocketError;
+};
 
 // == Socket Operations ==
-typedef enum
-{
+typedef NS_ENUM(unsigned int, SMSocketOperation) {
 	SMSocketOperationData,
 	SMSocketOperationLine
-} SMSocketOperation;
+};
 
 
 
@@ -96,22 +94,25 @@ typedef enum
 
 @interface SMSocket : NSObject
 
+// -- Instance --
+- (instancetype)initWithSocket:(int)descriptor NS_DESIGNATED_INITIALIZER;
+
+- (nullable instancetype)initWithIP:(NSString *)ip port:(uint16_t)port;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 // -- Properties --
 @property (weak, atomic, nullable) id <SMSocketDelegate> delegate;
 
-// -- Instance --
-- (nullable instancetype)initWithIP:(NSString *)ip port:(uint16_t)port;
-- (instancetype)initWithSocket:(int)descriptor;
-
 // -- Sending --
-- (BOOL)sendBytes:(const void *)bytes ofSize:(NSUInteger)size copy:(BOOL)copy;
+- (BOOL)sendBytes:(const void *)bytes size:(NSUInteger)size copy:(BOOL)copy;
 - (BOOL)sendBuffer:(SMBuffer *)buffer;
 
 // -- Operations --
-- (void)setGlobalOperation:(SMSocketOperation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag;
+- (void)setGlobalOperation:(SMSocketOperation)operation size:(NSUInteger)size tag:(NSUInteger)tag;
 - (void)removeGlobalOperation;
 
-- (void)scheduleOperation:(SMSocketOperation)operation withSize:(NSUInteger)size andTag:(NSUInteger)tag;
+- (void)scheduleOperation:(SMSocketOperation)operation size:(NSUInteger)size tag:(NSUInteger)tag;
 
 // -- Life --
 - (void)stop;

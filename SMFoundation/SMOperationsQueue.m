@@ -228,7 +228,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	// > localQueue <
 	
-	if ([_pending count] == 0)
+	if (_pending.count == 0)
 		return;
 	
 	BSTOperationsItem *item = _pending[0];
@@ -330,7 +330,7 @@ NS_ASSUME_NONNULL_BEGIN
 	
 	void (^tHandler)(BOOL canceled) = self.finishHandler;
 
-	if ([_pending count] > 0)
+	if (_pending.count > 0)
 	{
 		[self _scheduleNextItem];
 	}

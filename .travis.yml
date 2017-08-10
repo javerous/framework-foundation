@@ -1,0 +1,7 @@
+language: objective-c
+xcode_project: SMFoundation.xcodeproj
+xcode_scheme: SMFoundation
+osx_image: xcode8.3
+
+script:
+    - xcodebuild clean build -project SMFoundation.xcodeproj -scheme SMFoundation CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO

@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, readonly) double			averageSpeed;
 @property (atomic, readonly) NSTimeInterval	remainingTime;
 
-@property (nullable, atomic) void (^updateHandler)(NSTimeInterval remainingTime);
+@property (nullable, atomic) void (^updateHandler)(SMSpeedHelper *speedHelper);
 
 @end
 

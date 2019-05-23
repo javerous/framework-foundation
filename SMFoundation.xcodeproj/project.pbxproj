@@ -219,7 +219,7 @@
 		E8A86CF81C66BF7A009EABB9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "Julien-Pierre Avérous";
 				TargetAttributes = {
 					E8A86D001C66BF7A009EABB9 = {
@@ -229,11 +229,12 @@
 			};
 			buildConfigurationList = E8A86CFB1C66BF7A009EABB9 /* Build configuration list for PBXProject "SMFoundation" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				fr,
+				Base,
 			);
 			mainGroup = E8A86CF71C66BF7A009EABB9;
 			productRefGroup = E8A86D021C66BF7A009EABB9 /* Products */;
@@ -402,7 +403,7 @@
 				INFOPLIST_FILE = SMFoundation/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sourcemac.SMFoundation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -425,7 +426,7 @@
 				INFOPLIST_FILE = SMFoundation/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sourcemac.SMFoundation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

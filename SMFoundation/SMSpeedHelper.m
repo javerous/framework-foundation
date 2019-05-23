@@ -20,6 +20,8 @@
  *
  */
 
+#import <os/lock.h>
+
 #import "SMSpeedHelper.h"
 
 #import "SMTimeHelper.h"
@@ -53,16 +55,18 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation SMSpeedHelper
 {
 	dispatch_queue_t _localQueue;
+	os_unfair_lock _internalLock;
 	
 	NSUInteger	_currentAmount;
 	NSUInteger	_completeAmount;
 	
 	double			_lastSet;
-	NSMutableArray	*_statements;
+	NSMutableArray		*_statements;
+	SMSpeedStatement	*_freeStatement;
 
 	dispatch_source_t	_timer;
 	
-	void (^_updateHandler)(NSTimeInterval);
+	void (^_updateHandler)(SMSpeedHelper *);
 }
 
 
@@ -78,6 +82,8 @@ NS_ASSUME_NONNULL_BEGIN
 	if (self)
 	{
 		_localQueue = dispatch_queue_create("com.smfoundation.speed-helper.local", DISPATCH_QUEUE_SERIAL);
+		_internalLock = OS_UNFAIR_LOCK_INIT;
+		
 		_completeAmount = amount;
 		
 		_statements = [[NSMutableArray alloc] init];
@@ -93,28 +99,31 @@ NS_ASSUME_NONNULL_BEGIN
 */
 #pragma mark - SMSpeedHelper - Properties
 
-- (void)setUpdateHandler:(void (^ _Nullable)(NSTimeInterval))updateHandler
+- (void)setUpdateHandler:(void (^ _Nullable)(SMSpeedHelper *))updateHandler
 {
-	dispatch_async(_localQueue, ^{
-		
+	os_unfair_lock_lock(&_internalLock);
+	{
 		_updateHandler = updateHandler;
-		
+
 		if (!_updateHandler && _timer)
 		{
 			dispatch_source_cancel(_timer);
 			_timer = nil;
 		}
-	});
+	}
+	os_unfair_lock_unlock(&_internalLock);
 }
 
-- (void (^ _Nullable)(NSTimeInterval))updateHandler
+- (void (^ _Nullable)(SMSpeedHelper *))updateHandler
 {
-	__block void (^result)(NSTimeInterval) = nil;
+	void (^result)(SMSpeedHelper *) = nil;
 	
-	dispatch_sync(_localQueue, ^{
+	os_unfair_lock_lock(&_internalLock);
+	{
 		result = _updateHandler;
-	});
-	
+	}
+	os_unfair_lock_unlock(&_internalLock);
+
 	return result;
 }
 
@@ -128,47 +137,66 @@ NS_ASSUME_NONNULL_BEGIN
 {
 	double ts = SMTimeStamp();
 	
-	dispatch_async(_localQueue, ^{
+	os_unfair_lock_lock(&_internalLock);
+	{
 		[self _setCurrentAmount:currentAmout timestamp:ts];
-	});
+	}
+	os_unfair_lock_unlock(&_internalLock);
 }
 
 - (void)addAmount:(NSUInteger)amount
 {
 	double ts = SMTimeStamp();
 
-	dispatch_async(_localQueue, ^{
-		
+	os_unfair_lock_lock(&_internalLock);
+	{
 		NSUInteger newAmount = _currentAmount + amount;
 		
 		[self _setCurrentAmount:newAmount timestamp:ts];
-	});
+	}
+	os_unfair_lock_unlock(&_internalLock);
 }
 
 
 - (void)_setCurrentAmount:(NSUInteger)currentAmout timestamp:(double)ts
 {
-	// > _localQueue <
+	// > internalLock <
 	
-	if (currentAmout == 0 || currentAmout > _completeAmount || currentAmout < _currentAmount)
-		return;
-	
-	if (ts - _lastSet < 1.0)
+	// Check parameters.
+	if (currentAmout == 0 || currentAmout <= _currentAmount || currentAmout > _completeAmount)
 		return;
 	
 	// Update stats.
-	SMSpeedStatement *statement = [[SMSpeedStatement alloc] init];
+	_currentAmount = currentAmout;
+
+	// Optimization.
+	if (ts - _lastSet < 1.0)
+		return;
 	
 	_lastSet = ts;
-	_currentAmount = currentAmout;
+
+	// Add statement.
+	SMSpeedStatement *statement;
 	
-	statement.amount = currentAmout;
+	if (_freeStatement)
+	{
+		statement = _freeStatement;
+		_freeStatement = nil;
+	}
+	else
+		statement = [[SMSpeedStatement alloc] init];
+
+	statement.amount = _currentAmount;
 	statement.timestamp = ts;
 	
 	[_statements addObject:statement];
 	
+	// Remove older statement.
 	if (_statements.count > 10)
+	{
+		_freeStatement = [_statements objectAtIndex:0];
 		[_statements removeObjectAtIndex:0];
+	}
 	
 	// Start timer if necessary.
 	if (_updateHandler && _timer == nil && _statements.count >= 2)
@@ -186,10 +214,10 @@ NS_ASSUME_NONNULL_BEGIN
 			if (!strongSelf)
 				return;
 			
-			void (^updateHandler)(NSTimeInterval) = strongSelf->_updateHandler;
+			__auto_type updateHandler = strongSelf.updateHandler;
 
 			if (updateHandler)
-				updateHandler([strongSelf _remainingTime]);
+				updateHandler(strongSelf);
 		});
 		
 		dispatch_resume(_timer);
@@ -205,18 +233,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (double)averageSpeed
 {
-	__block double result;
+	double result;
 	
-	dispatch_sync(_localQueue, ^{
+	os_unfair_lock_lock(&_internalLock);
+	{
 		result = [self _averageSpeed];
-	});
+	}
+	os_unfair_lock_unlock(&_internalLock);
 	
 	return result;
 }
 
 - (double)_averageSpeed
 {
-	// > localQueue <
+	// > internalLock <
 	
 	NSUInteger	i, count = _statements.count;
 	double		sumWeightedSpeed = 0.0;
@@ -250,18 +280,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSTimeInterval)remainingTime
 {
-	__block NSTimeInterval result;
+	NSTimeInterval result;
 	
-	dispatch_sync(_localQueue, ^{
+	os_unfair_lock_lock(&_internalLock);
+	{
 		result = [self _remainingTime];
-	});
+	}
+	os_unfair_lock_unlock(&_internalLock);
 	
 	return result;
 }
 
 - (NSTimeInterval)_remainingTime
 {
-	// > localQueue <
+	// > internalLock <
 
 	double speed = [self _averageSpeed];
 	
